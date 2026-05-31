@@ -84,27 +84,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // --- 4. NAVIGATION ACTIVE SECTION TRACKER ---
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('section[id]');
+    // --- 4. NAVIGATION ACTIVE PAGE TRACKER ---
+    const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const allNavLinks = document.querySelectorAll('.nav-link, .mobile-link');
 
-    function checkActiveSection() {
-        let scrollPosition = window.scrollY + 200;
-
-        sections.forEach(section => {
-            if (scrollPosition >= section.offsetTop && scrollPosition < (section.offsetTop + section.offsetHeight)) {
-                const currentId = section.getAttribute('id');
-                navLinks.forEach(link => {
-                    link.classList.remove('active');
-                    if (link.getAttribute('href') === `#${currentId}`) {
-                        link.classList.add('active');
-                    }
-                });
-            }
-        });
-    }
-
-    window.addEventListener('scroll', checkActiveSection);
+    allNavLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+        const linkPath = href.split('/').pop() || 'index.html';
+        
+        if (linkPath === currentPath) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
 
 
     // --- 5. GALLERY MASONRY FILTERING ---
@@ -113,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
-            // Remove active from all buttons
             filterButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
 
@@ -143,23 +136,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentItemIndex = 0;
     let visibleGalleryItems = [];
 
-    // Open lightbox
-    galleryItems.forEach((item, index) => {
-        const zoomBtn = item.querySelector('.zoom-btn');
-        
-        // Handle click on item overlay or zoom button
-        item.addEventListener('click', (e) => {
-            // Make sure we only capture visible items for slideshow cycling
-            visibleGalleryItems = Array.from(galleryItems).filter(el => !el.classList.contains('hidden'));
-            currentItemIndex = visibleGalleryItems.indexOf(item);
-            
-            if (currentItemIndex > -1) {
-                openLightbox(visibleGalleryItems[currentItemIndex]);
-            }
+    if (galleryItems.length > 0) {
+        galleryItems.forEach((item, index) => {
+            item.addEventListener('click', (e) => {
+                visibleGalleryItems = Array.from(galleryItems).filter(el => !el.classList.contains('hidden'));
+                currentItemIndex = visibleGalleryItems.indexOf(item);
+                
+                if (currentItemIndex > -1) {
+                    openLightbox(visibleGalleryItems[currentItemIndex]);
+                }
+            });
         });
-    });
+    }
 
     function openLightbox(itemElement) {
+        if (!lightbox || !lightboxImg || !lightboxCaption) return;
         const img = itemElement.querySelector('.gallery-img');
         const title = itemElement.querySelector('.item-title').textContent;
         const category = itemElement.querySelector('.item-category').textContent;
@@ -170,13 +161,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         lightbox.classList.add('active');
         lightbox.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden'; // Stop page scroll behind modal
+        document.body.style.overflow = 'hidden'; 
     }
 
     function closeLightbox() {
+        if (!lightbox) return;
         lightbox.classList.remove('active');
         lightbox.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = ''; // Re-enable page scroll
+        document.body.style.overflow = ''; 
     }
 
     function showNext() {
@@ -191,108 +183,100 @@ document.addEventListener('DOMContentLoaded', () => {
         openLightbox(visibleGalleryItems[currentItemIndex]);
     }
 
-    // Lightbox triggers
-    closeBtn.addEventListener('click', closeLightbox);
-    nextBtn.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
-    prevBtn.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
-    
-    // Close on overlay click
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox-content')) {
-            closeLightbox();
-        }
-    });
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        if (!lightbox.classList.contains('active')) return;
+    if (closeBtn && nextBtn && prevBtn && lightbox) {
+        closeBtn.addEventListener('click', closeLightbox);
+        nextBtn.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
+        prevBtn.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
         
-        if (e.key === 'Escape') {
-            closeLightbox();
-        } else if (e.key === 'ArrowRight') {
-            showNext();
-        } else if (e.key === 'ArrowLeft') {
-            showPrev();
-        }
-    });
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox || e.target === lightbox.querySelector('.lightbox-content')) {
+                closeLightbox();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('active')) return;
+            
+            if (e.key === 'Escape') {
+                closeLightbox();
+            } else if (e.key === 'ArrowRight') {
+                showNext();
+            } else if (e.key === 'ArrowLeft') {
+                showPrev();
+            }
+        });
+    }
 
 
     // --- 7. APPOINTMENT BOOKING FORM & WHATSAPP REDIRECT ---
     const inquiryForm = document.getElementById('inquiry-form-element');
 
-    inquiryForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+    if (inquiryForm) {
+        inquiryForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-        // Retrieve values
-        const name = document.getElementById('form-name').value.trim();
-        const phone = document.getElementById('form-phone').value.trim();
-        const service = document.getElementById('form-service').value;
-        const eventDate = document.getElementById('form-date').value;
-        const message = document.getElementById('form-message').value.trim();
+            const name = document.getElementById('form-name').value.trim();
+            const phone = document.getElementById('form-phone').value.trim();
+            const service = document.getElementById('form-service').value;
+            const eventDate = document.getElementById('form-date').value;
+            const message = document.getElementById('form-message').value.trim();
 
-        // Form Validation
-        if (!name || !phone || !service) {
-            alert('Please fill out all required fields marked with *');
-            return;
-        }
+            if (!name || !phone || !service) {
+                alert('Please fill out all required fields marked with *');
+                return;
+            }
 
-        // WhatsApp Custom Message Template
-        let waText = `*SAMHITHA DESIGNER BOUTIQUE - DESIGN CONSULTATION*\n\n`;
-        waText += `Deargowithami Garu,\n`;
-        waText += `I would like to enquire / book a design consultation for my outfit. Below are my details:\n\n`;
-        waText += `*Name:* ${name}\n`;
-        waText += `*Phone:* ${phone}\n`;
-        waText += `*Required Service:* ${service}\n`;
-        
-        if (eventDate) {
-            // Format date to local readable format
-            const formattedDate = new Date(eventDate).toLocaleDateString('en-IN', {
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric'
-            });
-            waText += `*Estimated Event Date:* ${formattedDate}\n`;
-        }
-        
-        if (message) {
-            waText += `\n*Custom Requirements:*\n${message}\n`;
-        }
+            let waText = `*SAMHITHA DESIGNER BOUTIQUE - DESIGN CONSULTATION*\n\n`;
+            waText += `Deargowithami Garu,\n`;
+            waText += `I would like to enquire / book a design consultation for my outfit. Below are my details:\n\n`;
+            waText += `*Name:* ${name}\n`;
+            waText += `*Phone:* ${phone}\n`;
+            waText += `*Required Service:* ${service}\n`;
+            
+            if (eventDate) {
+                const formattedDate = new Date(eventDate).toLocaleDateString('en-IN', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                });
+                waText += `*Estimated Event Date:* ${formattedDate}\n`;
+            }
+            
+            if (message) {
+                waText += `\n*Custom Requirements:*\n${message}\n`;
+            }
 
-        // URL encode the text message
-        const encodedText = encodeURIComponent(waText);
-        
-        // Target phone: +91 63028 77252
-        const targetNumber = '916302877252';
-        const waUrl = `https://wa.me/${targetNumber}?text=${encodedText}`;
+            const encodedText = encodeURIComponent(waText);
+            const targetNumber = '916302877252';
+            const waUrl = `https://wa.me/${targetNumber}?text=${encodedText}`;
 
-        // Redirect user to WhatsApp API
-        window.open(waUrl, '_blank');
-        
-        // Reset form
-        inquiryForm.reset();
-    });
+            window.open(waUrl, '_blank');
+            inquiryForm.reset();
+        });
+    }
 
 
     // --- 8. SCROLL TO TOP & FLOATING ACTIONS CONTROL ---
     const scrollTopBtn = document.getElementById('scroll-top-btn');
     const floatingCtas = document.querySelector('.floating-ctas');
 
-    window.addEventListener('scroll', () => {
-        // Show scroll-to-top and floating contact widgets after scrolling past 300px (outside the hero)
-        if (window.scrollY > 300) {
-            scrollTopBtn.classList.add('active');
-            if (floatingCtas) floatingCtas.classList.add('active');
-        } else {
-            scrollTopBtn.classList.remove('active');
-            if (floatingCtas) floatingCtas.classList.remove('active');
-        }
-    });
-
-    scrollTopBtn.addEventListener('click', () => {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    if (scrollTopBtn) {
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('active');
+                if (floatingCtas) floatingCtas.classList.add('active');
+            } else {
+                scrollTopBtn.classList.remove('active');
+                if (floatingCtas) floatingCtas.classList.remove('active');
+            }
         });
-    });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
 
 });
