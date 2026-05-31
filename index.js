@@ -227,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             let waText = `*SAMHITHA DESIGNER BOUTIQUE - DESIGN CONSULTATION*\n\n`;
-            waText += `Deargowithami Garu,\n`;
+            waText += `Dear Gowthami Garu,\n`;
             waText += `I would like to enquire / book a design consultation for my outfit. Below are my details:\n\n`;
             waText += `*Name:* ${name}\n`;
             waText += `*Phone:* ${phone}\n`;
