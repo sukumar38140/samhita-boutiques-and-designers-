@@ -48,6 +48,7 @@
 
 html {
     scroll-behavior: smooth;
+    scroll-padding-top: 85px; /* Accounts for fixed header when scrolling to anchors */
     font-size: 16px;
     overflow-x: hidden;
 }
@@ -1558,6 +1559,14 @@ h2 {
     flex-direction: column;
     gap: 15px;
     z-index: 998;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.floating-ctas.active {
+    opacity: 1;
+    visibility: visible;
 }
 
 .float-btn {
@@ -1749,6 +1758,7 @@ h2 {
     h1.hero-title { font-size: 2.3rem; }
     .hero-subheadline { font-size: 1.3rem; }
     .hero-badge .badge-text { font-size: 0.95rem; }
+    .hero-badge .gold-line { display: none; } /* Hide gold lines on mobile to let text wrap cleanly */
     .hero-desc { font-size: 0.9rem; margin-bottom: 30px; }
     .hero-buttons { gap: 10px; }
     .btn-primary-gold, .btn-secondary-wine, .btn-secondary-gold {
@@ -1765,7 +1775,7 @@ h2 {
     }
     
     .about-section, .services-section, .wedding-showcase-banner, .gallery-section, .why-choose-section, .testimonials-section, .contact-section {
-        padding: 60px 0;
+        padding: 95px 0 60px 0; /* Increased top padding to clear the fixed mobile header */
     }
     
     h2.section-title { font-size: 1.8rem; }

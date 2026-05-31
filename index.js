@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 3. SCROLL REVEAL ANIMATIONS (Intersection Observer) ---
     const revealSections = document.querySelectorAll('.scroll-reveal');
     
+    const isMobileViewport = window.innerWidth <= 768;
     const revealObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -74,8 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, {
-        threshold: 0.15,
-        rootMargin: '0px 0px -50px 0px'
+        threshold: isMobileViewport ? 0.02 : 0.15,
+        rootMargin: isMobileViewport ? '0px 0px -20px 0px' : '0px 0px -50px 0px'
     });
 
     revealSections.forEach(section => {
@@ -272,14 +273,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
 
-    // --- 8. SCROLL TO TOP BUTTON ---
+    // --- 8. SCROLL TO TOP & FLOATING ACTIONS CONTROL ---
     const scrollTopBtn = document.getElementById('scroll-top-btn');
+    const floatingCtas = document.querySelector('.floating-ctas');
 
     window.addEventListener('scroll', () => {
-        if (window.scrollY > 400) {
+        // Show scroll-to-top and floating contact widgets after scrolling past 300px (outside the hero)
+        if (window.scrollY > 300) {
             scrollTopBtn.classList.add('active');
+            if (floatingCtas) floatingCtas.classList.add('active');
         } else {
             scrollTopBtn.classList.remove('active');
+            if (floatingCtas) floatingCtas.classList.remove('active');
         }
     });
 
