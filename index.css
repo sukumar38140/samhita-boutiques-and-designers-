@@ -1717,11 +1717,12 @@ h2 {
     .about-images {
         height: auto;
         max-width: 500px;
+        margin: 0 auto; /* Center the image container on mobile/tablets */
     }
 
     .experience-card {
         left: 15px;
-        bottom: 15px;
+        bottom: 0; /* Position badge at the bottom edge of the image */
     }
     
     .about-info {
@@ -1782,11 +1783,17 @@ h2 {
     
     .about-images {
         height: auto;
+        margin: 0 auto;
+    }
+    
+    .about-img-main {
+        aspect-ratio: 1.5; /* Avoid a thin compressed look by making the image slightly taller (3:2) */
+        object-fit: cover;
     }
     
     .experience-card {
         left: 15px;
-        bottom: 15px;
+        bottom: 0; /* Position badge at the bottom edge of the image */
     }
     
     .form-group-row {
@@ -1826,12 +1833,18 @@ h2 {
     /* Removed overlapping image absolute offsets */
     .about-images {
         height: auto;
+        margin: 0 auto;
+    }
+    
+    .about-img-main {
+        aspect-ratio: 1.5; /* Avoid a thin compressed look by making the image slightly taller (3:2) */
+        object-fit: cover;
     }
     
     .experience-card {
         padding: 8px 12px;
         left: 12px;
-        bottom: 12px;
+        bottom: 0; /* Position badge at the bottom edge of the image */
     }
     
     .exp-number { font-size: 1.5rem; }
